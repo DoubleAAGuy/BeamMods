@@ -1,15 +1,15 @@
 import requests
 import time
-time.sleep(30)
-# ----- Step 1: Fetch latest ETH price from CoinGecko -----
+
+# ----- Step 1: Fetch latest ETH price from Coinbase -----
 def get_latest_price():
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+    url = "https://api.coinbase.com/v2/prices/ETH-USD/spot"
     try:
         data = requests.get(url, timeout=5).json()
-        if "ethereum" not in data or "usd" not in data["ethereum"]:
+        if "data" not in data or "amount" not in data["data"]:
             print(f"Error fetching price: {data}")
             return None
-        return float(data["ethereum"]["usd"])
+        return float(data["data"]["amount"])
     except Exception as e:
         print(f"Exception: {e}")
         return None
@@ -17,7 +17,7 @@ def get_latest_price():
 # ----- Step 2: Update price history -----
 price_history = []
 
-def update_price_history(max_len=20):
+def update_price_history(max_len=50):
     price = get_latest_price()
     if price is None:
         return price_history
@@ -55,8 +55,8 @@ def check_trade(prices):
     print(f"Current Price: ${price:.2f} | SMA: ${sma:.2f} | Balance: ${balance:.2f} | Crypto: {crypto:.6f}")
 
 # ----- Step 5: Run the bot every few seconds -----
-print("Starting ETH real-time trading simulation using CoinGecko...")
+print("Starting ETH real-time trading simulation using Coinbase API...")
 while True:
     update_price_history()
     check_trade(price_history)
-    time.sleep(30)  # checks every 5 seconds
+    time.sleep(5)  # checks every 5 seconds
